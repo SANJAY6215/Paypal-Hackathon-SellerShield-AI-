@@ -19,7 +19,7 @@ Legend: **PASS** executed and succeeded · **FAIL** executed and failed · **NOT
 | PostgreSQL | **NOT TESTED** (schema + compose exist; no Postgres/Docker daemon available) |
 | Real PayPal Sandbox calls / real webhook signature verification | **NOT TESTED** (no credentials) |
 | Live AI model calls | **NOT TESTED** (no API key) |
-| Production deployment (Render) | **NOT TESTED** (`render.yaml` prepared, never deployed) |
+| Production deployment (Render) | **NOT TESTED** (manual Render setup documented in DEPLOYMENT_GUIDE.md, never deployed) |
 
 ## 2. Commands executed
 ```

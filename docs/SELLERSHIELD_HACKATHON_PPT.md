@@ -93,7 +93,7 @@ Visual: `screenshots/11-regression-memory.png`
 | Next.js 15, React Flow, Recharts, Tailwind | PostgreSQL (schema + compose) | more simulated apps / rule packs |
 | Express + TypeScript + Zod, JWT cookie, RBAC | Real PayPal Sandbox calls & webhook signature verification | source-aware analysis of uploaded sandbox repos |
 | Prisma + **SQLite** | Real GitHub PR / real webhook verification / PayPal capture-refund live (Groq and PayPal OAuth + 2 probes are live-verified; Gemini disabled) | Redis/BullMQ workers |
-| Deterministic simulator, 13 scenarios, ledger audit | Render deployment (`render.yaml`) | merchant-calibrated financial model |
+| Deterministic simulator, 13 scenarios, ledger audit | Render deployment (manual steps in DEPLOYMENT_GUIDE.md) | merchant-calibrated financial model |
 | 82 backend tests + 21-check headless-Chrome E2E | | live-Sandbox CI |
 | JSON + PDF reports | | |
 

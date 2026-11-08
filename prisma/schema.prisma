@@ -1,11 +1,11 @@
-// SellerShield AI data model. Default provider: SQLite (zero-setup local run).
-// For PostgreSQL: copy prisma/schema.postgres.prisma over this file (see README).
+// SellerShield AI data model. PostgreSQL (DATABASE_URL=postgresql://user:pass@host:5432/db).
+// schema.sqlite.prisma is the legacy SQLite model, kept only as the source for backend/scripts/migrate-sqlite-to-postgres.ts.
 generator client {
   provider = "prisma-client-js"
 }
 
 datasource db {
-  provider = "sqlite"
+  provider = "postgresql"
   url      = env("DATABASE_URL")
 }
 

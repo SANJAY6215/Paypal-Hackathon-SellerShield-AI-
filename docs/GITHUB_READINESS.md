@@ -11,7 +11,7 @@ The project folder is **not a git repository** (`git status` → "not a git repo
 | Licence | **missing** — add one if you want others to reuse the code |
 | README / docs | updated |
 | CI | none configured |
-| Deployment config | `render.yaml` (unverified), `docker-compose.yml` (Postgres, unverified) |
+| Deployment config | manual Render steps in `DEPLOYMENT_GUIDE.md` (unverified), `docker-compose.yml` (Postgres, unverified) |
 
 ## Recommended commands (run yourself; I did not run them)
 ```bash

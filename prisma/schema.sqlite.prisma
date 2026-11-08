@@ -1,11 +1,12 @@
-// SellerShield AI data model. Default provider: SQLite (zero-setup local run).
-// For PostgreSQL: copy prisma/schema.postgres.prisma over this file (see README).
+// LEGACY SQLite model. Not used by the app: it only lets backend/scripts/migrate-sqlite-to-postgres.ts read an old dev.db.
+// Generate its client with: cd backend && npm run db:generate-sqlite-legacy
 generator client {
   provider = "prisma-client-js"
+  output   = "../backend/node_modules/.legacy-sqlite-client"
 }
 
 datasource db {
-  provider = "postgresql"
+  provider = "sqlite"
   url      = env("DATABASE_URL")
 }
 

@@ -1,5 +1,5 @@
 {
-  "at": "2026-11-08T06:36:52.461Z",
+  "at": "2026-11-08T12:07:23.331Z",
   "results": [
     {
       "id": 1,
@@ -101,7 +101,7 @@
       "id": 19,
       "name": "Reports open (preview, JSON and PDF)",
       "status": "PASS",
-      "detail": "pdf 10046 bytes"
+      "detail": "pdf 10035 bytes"
     },
     {
       "id": 20,
@@ -158,10 +158,6 @@
       "detail": "openDisabled=true"
     }
   ],
-  "badResponses": [
-    "500 POST /api/demo/reset"
-  ],
-  "consoleErrors": [
-    "Failed to load resource: the server responded with a status of 500 (Internal Server Error)"
-  ]
+  "badResponses": [],
+  "consoleErrors": []
 }

@@ -53,9 +53,12 @@ export function startAssessment(id: string): Promise<void> {
       else if (a.assessmentMode === 'website') await runWebsite(id);
       else await runFullAssessment(id);
     } catch (e: any) {
-      await prisma.assessment.update({ where: { id }, data: { status: 'failed', completedAt: new Date() } });
-      await setStage(id, 'failed', { error: String(e?.message || e) });
-      await prisma.agentRun.updateMany({ where: { assessmentId: id, status: { notIn: ['completed', 'failed'] } }, data: { status: 'failed' } });
+      // the assessment may have been deleted underneath us (e.g. a demo reset): record the failure only if the row still exists
+      const stillThere = await prisma.assessment.updateMany({ where: { id }, data: { status: 'failed', completedAt: new Date() } }).catch(() => ({ count: 0 }));
+      if (stillThere.count > 0) {
+        await setStage(id, 'failed', { error: String(e?.message || e) }).catch(() => undefined);
+        await prisma.agentRun.updateMany({ where: { assessmentId: id, status: { notIn: ['completed', 'failed'] } }, data: { status: 'failed' } }).catch(() => undefined);
+      }
       console.error('assessment failed', e);
     }
   })();

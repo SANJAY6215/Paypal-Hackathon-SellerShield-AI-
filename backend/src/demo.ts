@@ -24,13 +24,30 @@ export async function seedAssessment(merchantId: string) {
   return a;
 }
 
-export async function ensureDemoMerchant(userId: string) {
-  const m = await findOrCreate(userId);
-  if ((await prisma.assessment.count({ where: { merchantId: m.id } })) === 0) await seedAssessment(m.id);
-  return m;
+/** Serialises demo seed/reset per user. Without it, a reset arriving while the first-visit seed is still running deletes the
+ *  seed's assessment mid-run and the request fails with a 500. */
+const demoLocks = new Map<string, Promise<unknown>>();
+function withDemoLock<T>(userId: string, fn: () => Promise<T>): Promise<T> {
+  const run = (demoLocks.get(userId) ?? Promise.resolve()).catch(() => undefined).then(fn);
+  const tail = run.catch(() => undefined);
+  demoLocks.set(userId, tail);
+  tail.then(() => { if (demoLocks.get(userId) === tail) demoLocks.delete(userId); });
+  return run;
 }
 
-export async function resetDemoMerchant(userId: string, opts: { seed?: boolean } = {}) {
+export function ensureDemoMerchant(userId: string) {
+  return withDemoLock(userId, async () => {
+    const m = await findOrCreate(userId);
+    if ((await prisma.assessment.count({ where: { merchantId: m.id } })) === 0) await seedAssessment(m.id);
+    return m;
+  });
+}
+
+export function resetDemoMerchant(userId: string, opts: { seed?: boolean } = {}) {
+  return withDemoLock(userId, () => resetDemoMerchantUnlocked(userId, opts));
+}
+
+async function resetDemoMerchantUnlocked(userId: string, opts: { seed?: boolean } = {}) {
   const m = await findOrCreate(userId);
   await prisma.attackMemory.deleteMany({ where: { merchantId: m.id } });
   await prisma.assessment.deleteMany({ where: { merchantId: m.id } }); // cascades runs, vulnerabilities, defences, tests, chains

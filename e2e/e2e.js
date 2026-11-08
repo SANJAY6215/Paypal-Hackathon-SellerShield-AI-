@@ -51,7 +51,8 @@ const rec = (id, name, ok, detail = '') => { results.push({ id, name, status: ok
 
     // 3 run live demo
     const clicked = await clickBtn(/Run Live Demo/);
-    await waitText(/Stage 2/, 15000).catch(() => {});
+    // wait until agents are actually working (the idle list also contains the text "Stage 2")
+    await waitText(/(analysing|testing|finding discovered)/, 20000).catch(() => {});
     await sleep(2500);
     await shot('01-demo-running');
     rec(3, 'Run Live Demo starts an assessment', clicked);

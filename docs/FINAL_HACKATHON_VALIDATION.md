@@ -15,7 +15,7 @@ SellerShield AI is a merchant-side commerce-security platform: it attacks a simu
 |---|---|---|---|---|---|
 | 1 | PayPal Red Team | **COMPLETED** (RT-01..RT-07 LIVE VERIFIED on real Sandbox; RT-08/09 are SellerShield-side checks) | Fresh real run; human approved the order as a Sandbox buyer; Continue executed capture, capture replay, duplicate capture, refund, refund replay, over-refund and reconciliation against PayPal Sandbox; found and fixed an RT-07 amount-parsing bug | `docs/screenshots/final/LIVE-paypal-redteam-sandbox-phaseA.png`, `...-phaseB-complete.png`, `...-phaseB-complete-2.png`; `docs/redteam-live-sandbox-run.json` (run `cmw7edbba0003v4iotkklfbxm`, order `9W579655A7779603T`) | Webhook-related probes against a real PayPal delivery remain blocked (Priority 3) |
 | 2 | GitHub Defence | **BLOCKED** | Inspected implementation; added richer PR body (reproduction, root cause, security impact, limitations), a read-only preflight (`GET /api/github/status`) and post-creation verification against the GitHub API (draft, branches, files, test, not merged); MOCK TESTED | tests in `backend/tests/features.test.ts` (MOCK); no real PR URL exists | `GITHUB_REPO` is not set (no dedicated test repo); the token in `.env` has unconfirmed rotation and I will not reuse a possibly-compromised credential |
-| 3 | PayPal Webhooks | **BLOCKED** | Inspected implementation; added `PAYMENT.CAPTURE.REVERSED`; LOCAL forged/malformed/missing-field/replay tests; wrote setup guide | `docs/WEBHOOK_SETUP.md`; curl results below | `PAYPAL_WEBHOOK_ID` empty; needs a public HTTPS URL and Dashboard registration by the owner |
+| 3 | PayPal Webhooks | **COMPLETED (LIVE VERIFIED, with limits)** | Webhook registered on the Render-hosted backend; three real PayPal Sandbox deliveries (`CHECKOUT.ORDER.APPROVED`, `PAYMENT.CAPTURE.COMPLETED`, `PAYMENT.CAPTURE.REFUNDED`) were verified by SellerShield through PayPal's `verify-webhook-signature` API and cross-checked against PayPal's Developer Dashboard (Webhook Events, SellerShield AI app, all Success), 2026-11-08; LOCAL forged/malformed/replay tests also pass | `docs/WEBHOOK_SETUP.md`; PayPal Dashboard event log | Real events were stored as `ignored` (authentic, but no matching stored transaction, so no state change); duplicate handling for a real redelivery (Dashboard *Resend*) not tested |
 | 4 | Gemini | **COMPLETED** (kept disabled) | `GEMINI_ENABLED` flag (default off); active provider list is `groq` only (verified via `/api/health` and `/api/discovery/config`); MOCK test that Gemini stays off even with a key; stale Anthropic/AI_* references removed | `health`: provider `groq`; test "Gemini stays DISABLED by default" | n/a (Gemini remains BLOCKED by Google billing, intentionally unused) |
 | 5 | Security cleanup | **PARTIALLY COMPLETED** | Secret scan; JWT secret rotated; backup overwritten and deleted; probes; audit | §6 | GitHub token rotation and OneDrive copies need owner action; dependency advisories not upgraded |
 | 6 | Presentation | **PARTIALLY COMPLETED** | Real labelled screenshots; this report; docs updated; 7-10 min demo script; judge Q&A | `docs/screenshots/final/` (7 files) | No screenshots of a real GitHub PR or real webhook (blocked); no backup video recorded |
@@ -51,7 +51,8 @@ SellerShield AI is a merchant-side commerce-security platform: it attacks a simu
 - **Implemented:** raw-body endpoint, PayPal `verify-webhook-signature` call, unique event ids, unverified events stored but never processed.
 - **Changed:** `PAYMENT.CAPTURE.REVERSED` is now handled; simulator accepts it.
 - **LOCAL results (curl against the real endpoint):** unsigned/forged → 401 `rejected_unverified`; missing `event_type` → 400; malformed JSON → 400. MOCK/LOCAL (vitest): replay → duplicate; REVERSED processed under local HMAC simulation.
-- **Not tested:** any real PayPal delivery; real signature verification; real replay. **Not marked complete.** See `docs/WEBHOOK_SETUP.md` for the exact owner steps.
+- **LIVE VERIFIED (2026-11-08):** three real PayPal Sandbox deliveries (`CHECKOUT.ORDER.APPROVED`, `PAYMENT.CAPTURE.COMPLETED`, `PAYMENT.CAPTURE.REFUNDED`) were verified by SellerShield through PayPal's `verify-webhook-signature` API and cross-checked against PayPal's Developer Dashboard (Webhook Events, SellerShield AI app, all Success), 2026-11-08.
+- **Not tested:** a real PayPal redelivery of the same event id (Dashboard *Resend*); real events driving a state change (they were authentic but `ignored`, no matching stored transaction). RT-08/RT-09 remain SellerShield-side checks (forged payload, local HMAC replay).
 
 ### Priority 4: Gemini (kept disabled)
 - Gemini returned HTTP 403 (billing) on every model in the earlier live validation; not retried.
@@ -73,7 +74,7 @@ Screenshots, docs, demo script and Q&A updated; see §7 and `docs/SELLERSHIELD_L
 | PayPal | Order approval | Yes (human buyer on sandbox.paypal.com) | **PASS** (order status became APPROVED, then captured) | RT-03 capture succeeded |
 | PayPal | Capture | **Yes** | PASS: capture `6H6581514J8319405`; replay same id; duplicate rejected `ORDER_ALREADY_CAPTURED` | `redteam-live-sandbox-run.json` |
 | PayPal | Refund | **Yes** | PASS: refund `5KP7598866884964C`; replay same id; over-refund rejected `REFUND_AMOUNT_EXCEEDED` | same |
-| PayPal | Webhook verification | No | **BLOCKED** (LOCAL forged/malformed tests pass; real delivery NOT TESTED) | `docs/WEBHOOK_SETUP.md` |
+| PayPal | Webhook verification | No | **LIVE VERIFIED** (3 real Sandbox deliveries, cross-checked in PayPal's Dashboard); real redelivery/duplicate NOT TESTED | `docs/WEBHOOK_SETUP.md` |
 | GroqCloud | Tool calling | Yes (earlier today, `validate-llm.ts`; not repeated to conserve free-tier quota) | PASS | `docs/llm-live-validation.json` |
 | GroqCloud | Structured output | Yes (earlier today) | PASS (tool-call args + prompt+Zod). `response_format: json_object` rejected with HTTP 400 on `openai/gpt-oss-120b`, so it is not used | same |
 | GroqCloud | Attack discovery | **Yes** (re-run this pass through the real UI → API → DB) | PASS: 2 findings, both independently verified | `LIVE-discovery-groq-llm-session*.png` |
@@ -107,7 +108,7 @@ Note: the first browser-suite invocation of this pass produced no output; it was
 | CORS | A disallowed origin receives only the app's own origin; browsers block it |
 | Rate limiting | 40 rapid bad logins → 29×401 then 11×429 |
 | Input validation / injection | SQLi-style email → 400 (Zod); Prisma only, no raw SQL; no `eval`/`innerHTML`/shell execution |
-| Webhook security | Forged → 401 and not processed; missing fields/malformed → 400 (LOCAL). Real signature verification NOT TESTED |
+| Webhook security | Forged → 401 and not processed; missing fields/malformed → 400 (LOCAL). Real signature verification LIVE VERIFIED on 3 Sandbox events (2026-11-08) |
 | Sensitive logging | Provider errors, traces and prompts are redacted; keys never appear in API responses (tested) |
 | Dependency advisories | `npm audit --omit=dev`: backend 4 high (zod < 4.6.6, prisma tooling), frontend 1 moderate + 1 high (next/postcss). **Not upgraded** (breaking majors); documented |
 | Test isolation | Guard test proves tests load no real credentials (`ppMode`, LLM and GitHub all off in tests) |
@@ -160,5 +161,5 @@ Re-validated on the final state: backend **117/117**, backend + frontend type-ch
 | 5 | **Final validation** | **COMPLETED** | See the line above; this section | n/a |
 | 6 | Text description + tools list | **PARTIALLY COMPLETED** | Drafted in `docs/SUBMISSION_TEXT.md` (MIT noted; tools list covers PayPal, Groq, Gemini (disabled), GitHub API and the application stack only) | Fill team name and links |
 | 7 | Functional demo instructions | **COMPLETED** | `README.md`, `docs/INSTALLATION_GUIDE.md` | none |
-| 8 | PayPal webhook verification (optional, strengthens "PayPal central") | **BLOCKED** | Implemented; LOCAL tests only | `docs/WEBHOOK_SETUP.md` |
+| 8 | PayPal webhook verification (optional, strengthens "PayPal central") | **COMPLETED** | Live verified on the Render deployment (3 events) | `docs/WEBHOOK_SETUP.md` |
 | 9 | Licence notes | **COMPLETED** | `png-js` (via pdfkit) has no licence field in its manifest (upstream is MIT); `jszip` is dual MIT/GPL (take MIT); `sharp`'s prebuilt libvips binary carries LGPL-3.0 (an optional Next.js image dependency, not modified or bundled in our source); two MPL-2.0 packages (file-level copyleft, fine for MIT/Apache). No copyleft obligations fall on our own code | none |

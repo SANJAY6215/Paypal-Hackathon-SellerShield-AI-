@@ -6,7 +6,7 @@
 - ✅ Frontend production build and type-check
 - ✅ Browser E2E 21/21 (full demo, approval gate, rollback, regression, reports, navigation, tablet layout)
 - ✅ Security probes (auth, CORS, rate limit, forged webhook, SSRF/upload unit tests)
-- ⚠ PostgreSQL · PayPal Sandbox/webhook verification · live AI · Render deployment (never executed)
+- ✓ Render deployment with PostgreSQL, PayPal Sandbox and webhook verification, Groq live AI (executed 2026-11-08; the local test suite is not yet run on PostgreSQL)
 **New features (2026-11-09)**
 - ✅ Discovery Lab (search engine) verified in tests and browser; PayPal Red Team verified against a local emulator; Defence-as-PR verified against a local GitHub mock
 - ✅ Real PayPal Sandbox: full red team RT-01..RT-07 passed on a human-approved order (capture, refund, replay, over-refund, reconciliation)

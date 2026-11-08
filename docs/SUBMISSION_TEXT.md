@@ -14,7 +14,7 @@ SellerShield AI is a merchant-side security testing platform for online sellers 
 - **Defence as Pull Request:** a verified, approved fix is packaged as a patch, a runnable regression test and an evidence report for a **draft** GitHub PR (never merged automatically). *Status: implemented and tested against a mock; a real PR has not been created yet.*
 
 ## How PayPal is used
-PayPal REST APIs in the Sandbox: OAuth 2.0 client credentials, Orders v2 (create, approve by a human buyer, capture), Payments v2 (refund, refund lookup), `PayPal-Request-Id` idempotency, and webhook signature verification via `verify-webhook-signature` (**implemented, not yet verified against a live delivery**).
+PayPal REST APIs in the Sandbox: OAuth 2.0 client credentials, Orders v2 (create, approve by a human buyer, capture), Payments v2 (refund, refund lookup), `PayPal-Request-Id` idempotency, and webhook signature verification via `verify-webhook-signature` (**verified live on 3 real Sandbox deliveries; real redelivery/duplicate not tested**).
 
 ## Tools used and how
 | Tool | How it is used |
@@ -32,7 +32,7 @@ MIT (see `LICENSE`, Copyright (c) 2026 Sanjay B.)
 Setup and run instructions: `README.md` and `docs/INSTALLATION_GUIDE.md`. No credentials are needed for the main demo (it runs on a local simulator); optional PayPal Sandbox and Groq keys unlock the live paths. [Optional hosted demo URL: none yet.]
 
 ## Honest limitations
-Simulation covers the built-in NovaCart shop only; PayPal webhook signature verification and real GitHub PR creation are not yet verified live; Gemini is disabled; dollar figures are simulated projections.
+Simulation covers the built-in NovaCart shop only; real GitHub PR creation is not yet verified live; Gemini is disabled; dollar figures are simulated projections.
 
 ## Links
 Repository: [public GitHub URL] · Video: [YouTube URL] · Team: [names]

@@ -142,7 +142,7 @@ Deeper: No Docker daemon/Postgres was available. Same Prisma models; `schema.pos
 
 **33. Is real PayPal integration tested?**
 Short: Mostly yes. Against real PayPal Sandbox we ran OAuth, order creation with idempotency, capture-before-approval rejection, a human-approved capture, capture replay, duplicate capture rejection, refund, refund replay and over-refund rejection. Webhook signature verification has not been run live yet.
-Deeper: ⚠ OAuth, Orders, capture, refund, and verify-webhook-signature never ran against PayPal. What *is* tested: our dedupe, unverified-event rejection, capture-state rules, idempotency, in demo mode.
+Deeper: OAuth, Orders, capture, refund and `verify-webhook-signature` have run against PayPal Sandbox (the webhook on 3 real deliveries, 2026-11-08; a real redelivery was not tested). What *is* tested: our dedupe, unverified-event rejection, capture-state rules, idempotency, in demo mode.
 
 **34. Is live AI tested?**
 Short: No.
@@ -238,4 +238,4 @@ Deeper: `llmAttacker` skips a failed provider for the rest of the run and restar
 **What if the LLM API fails?** Rate limits: wait and retry (live-observed). Key errors/outages: provider skipped; if none are left the LLM engine reports failure and the deterministic search remains available.
 **What if PayPal is unavailable?** The app falls back to a clearly labelled local simulation; the red team refuses to run against anything but Sandbox.
 **Can it work without paid AI APIs?** Yes: the guided search, simulator, auditor, patches and reports need no AI; Groq's free tier powers the LLM engine (slowly, rate-limited).
-**What is genuinely live-tested versus simulated?** See `FINAL_HACKATHON_VALIDATION.md` §4: live = PayPal OAuth and two red-team probes, Groq tool calling / structured output / two discovery sessions. Simulated/mocked = shop attacks (simulator), capture/refund (emulator only so far), webhooks (local), GitHub PR (mock). Gemini blocked.
+**What is genuinely live-tested versus simulated?** See `FINAL_HACKATHON_VALIDATION.md` §4: live = PayPal OAuth, the red-team probes RT-01..RT-07 and webhook signature verification on 3 deliveries, Groq tool calling / structured output / two discovery sessions. Simulated/mocked = shop attacks (simulator), capture/refund (emulator only so far), local webhook tests RT-08/RT-09, GitHub PR (mock). Gemini blocked.

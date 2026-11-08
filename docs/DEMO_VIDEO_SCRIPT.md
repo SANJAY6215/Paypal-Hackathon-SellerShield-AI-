@@ -11,7 +11,7 @@ Everything on screen must be a genuine recording of the running app. Never show 
 | LLM discovery | **LIVE: Groq LLM, replay-verified** |
 | Defence patch | **LOCAL: simulated shop, human-approved** |
 | Pull request | **PREVIEW ONLY: real GitHub PR not yet created** (or **LIVE: GitHub draft PR** only if one exists) |
-| Webhooks | **NOT YET VERIFIED LIVE** (say so in one sentence) |
+| Webhooks | **LIVE VERIFIED** on 3 real Sandbox events (say real redelivery/duplicate is untested) |
 
 ## Shot list with timestamps
 | Time | Screen (record live) | Narration |
@@ -22,7 +22,7 @@ Everything on screen must be a genuine recording of the running app. Never show 
 | 1:25-1:50 | Same page, the **pre-run Groq LLM session** (run it *before* recording and do not reset afterwards: it takes about 2 minutes on the free tier). Show the trace with tool calls and the verified findings; open *Show independent verification*. | "A real LLM drives the shop through tool calls and improvises attacks. Its claims are never trusted: every sequence is replayed on the vulnerable shop and a secure baseline. Both findings here are known root causes via new paths, and hallucinated attacks are rejected." |
 | 1:50-2:25 | **Live Demo** or **Defence Center**: show the unified diff, tick the confirmation, apply, then **Replay the original attack → FAILED (blocked)** and the legitimate-refund checks passing. | "Fixes arrive as real code diffs, need human approval and an explicit confirmation, apply only to the demo app, and are proven by replaying the attack." |
 | 2:25-2:40 | Defence Center → **Preview pull request** (patch, regression test, report). | "Verified fixes can be opened as a draft GitHub pull request, never merged automatically. **[Say honestly: this is a preview; real GitHub creation is not yet verified.]**" (If a real draft PR exists, show its GitHub page and say so instead.) |
-| 2:40-2:55 | Attack Memory → Rerun previous tests → *reintroduced* (optional) **or** the Dashboard | "Live-verified: PayPal Sandbox and Groq. Not yet live: webhook signature verification and the GitHub PR. Security should not stop at detection." |
+| 2:40-2:55 | Attack Memory → Rerun previous tests → *reintroduced* (optional) **or** the Dashboard | "Live-verified: PayPal Sandbox and Groq. Also live: real PayPal webhook signature verification. Not yet live: the GitHub PR. Security should not stop at detection." |
 
 Total about 2:55. Cut the Attack Memory shot first if you run long; the hard limit is 3:00, so aim for 2:45.
 

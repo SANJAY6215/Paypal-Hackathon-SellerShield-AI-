@@ -1,6 +1,14 @@
 # Real PayPal Sandbox webhook verification: setup and test plan
 
-**Status: BLOCKED - HUMAN ACTION REQUIRED.** `PAYPAL_WEBHOOK_ID` is empty and the backend has no public HTTPS URL, so no real PayPal delivery has ever reached this app. Everything below the "Already verified" line is what has *not* been done.
+**Status: LIVE VERIFIED (2026-11-08), with limits.** The webhook was registered in the PayPal Developer Dashboard (Sandbox, SellerShield AI app) against the Render-hosted backend. A Sandbox red-team run with a human buyer approval produced three real deliveries that SellerShield marked `verified` (PayPal's `verify-webhook-signature` returned SUCCESS) and that PayPal's Dashboard lists as delivered with status Success:
+
+| Event | Event id | Summary |
+|---|---|---|
+| `CHECKOUT.ORDER.APPROVED` | `WH-21K6040068634492J-00G73053V43320912` | order approved by buyer |
+| `PAYMENT.CAPTURE.COMPLETED` | `WH-7E845170EG921584W-7P5109710H359973X` | $126.00 capture |
+| `PAYMENT.CAPTURE.REFUNDED` | `WH-2B623203JE1467148-5UJ69375T34539821` | $100.00 refund |
+
+**Limits (honest):** these real events were stored with processing status `ignored` (authentic, but no matching stored transaction, so no payment state changed). A real redelivery of the same event id (Dashboard *Resend*) was **not tested**; duplicate handling is proven only by the local replay test (RT-09, local HMAC). The setup steps below remain the procedure to reproduce it.
 
 ## How verification is implemented (`backend/src/paypal.ts`)
 `POST /api/paypal/webhooks` receives the **raw body**, then `verifyWebhook()` calls PayPal's `POST /v1/notifications/verify-webhook-signature` with the five `paypal-*` headers, the configured `PAYPAL_WEBHOOK_ID` and the raw event JSON; only `verification_status: SUCCESS` counts as `verified`. Without credentials / webhook id the event is `unverifiable`; missing headers or a failed check is `failed`. Unverified events are stored as `rejected_unverified` and never change payment state. `eventId` is unique, so a replay returns `duplicate` without re-processing. Handled types: `CHECKOUT.ORDER.APPROVED`, `PAYMENT.CAPTURE.PENDING|COMPLETED|DENIED|REFUNDED|REVERSED`.

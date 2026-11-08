@@ -22,7 +22,7 @@ Assets: user sessions, merchant data, uploaded documents, PayPal/AI credentials 
 | Cross-tenant access | every resource checked against merchant owner (tested) | none known |
 | Privilege misuse | roles; viewer cannot mutate | only three coarse roles |
 | Brute force | 30 req/min on auth routes, 600/min global | per-IP only; behind a proxy `trust proxy` is set to 1 |
-| Forged PayPal webhook | verification required; unverified stored, not processed; unique event ids | PayPal verification path live-verified on 3 Sandbox events; real redelivery untested |
+| Forged PayPal webhook | verification required; unverified stored, not processed; unique event ids | PayPal verification path live-verified on 3 Sandbox events; a real Resend was delivered and not stored twice |
 | SSRF via website mode | scheme/host/IP checks, connect-time DNS validation, redirect revalidation, size/time caps | relies on Node `lookup`; not tested against live rebinding; response parsing by cheerio |
 | Malicious upload | allow-list, 1 MB, UTF-8, never executed | stored text could contain prompt-injection text — it is not fed to the LLM today |
 | Prompt injection / agent manipulation | LLM output limited to scenario IDs, Zod-validated; deterministic code executes and verifies | merchant-supplied profile text is placed in the prompt (redacted for secrets only) |

@@ -142,7 +142,7 @@ Deeper: No Docker daemon/Postgres was available. Same Prisma models; `schema.pos
 
 **33. Is real PayPal integration tested?**
 Short: Mostly yes. Against real PayPal Sandbox we ran OAuth, order creation with idempotency, capture-before-approval rejection, a human-approved capture, capture replay, duplicate capture rejection, refund, refund replay and over-refund rejection. Webhook signature verification has not been run live yet.
-Deeper: OAuth, Orders, capture, refund and `verify-webhook-signature` have run against PayPal Sandbox (the webhook on 3 real deliveries, 2026-11-08; a real redelivery was not tested). What *is* tested: our dedupe, unverified-event rejection, capture-state rules, idempotency, in demo mode.
+Deeper: OAuth, Orders, capture, refund and `verify-webhook-signature` have run against PayPal Sandbox (the webhook on 3 real deliveries, 2026-11-08; a real Resend was delivered and not stored twice, response body not captured). What *is* tested: our dedupe, unverified-event rejection, capture-state rules, idempotency, in demo mode.
 
 **34. Is live AI tested?**
 Short: No.

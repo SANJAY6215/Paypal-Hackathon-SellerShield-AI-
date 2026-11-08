@@ -14,7 +14,7 @@ SellerShield AI is a merchant-side security testing platform for online sellers 
 - **Defence as Pull Request:** a verified, approved fix is packaged as a patch, a runnable regression test and an evidence report for a **draft** GitHub PR (never merged automatically). *Status: implemented and tested against a mock; a real PR has not been created yet.*
 
 ## How PayPal is used
-PayPal REST APIs in the Sandbox: OAuth 2.0 client credentials, Orders v2 (create, approve by a human buyer, capture), Payments v2 (refund, refund lookup), `PayPal-Request-Id` idempotency, and webhook signature verification via `verify-webhook-signature` (**verified live on 3 real Sandbox deliveries; real redelivery/duplicate not tested**).
+PayPal REST APIs in the Sandbox: OAuth 2.0 client credentials, Orders v2 (create, approve by a human buyer, capture), Payments v2 (refund, refund lookup), `PayPal-Request-Id` idempotency, and webhook signature verification via `verify-webhook-signature` (**verified live on 3 real Sandbox deliveries; a real Resend was delivered and not stored twice**).
 
 ## Tools used and how
 | Tool | How it is used |

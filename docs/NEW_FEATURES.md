@@ -13,7 +13,7 @@ With Sandbox credentials supplied in `backend/.env`:
 - **OAuth client-credentials against `api-m.sandbox.paypal.com`: succeeded** (`/api/paypal/status` → `oauth: ok`).
 - **Red team phase A against real PayPal Sandbox: PASS.** RT-01 (two `POST /v2/checkout/orders` with the same `PayPal-Request-Id` returned the same order id) and RT-02 (capture of an unapproved order returned HTTP 422 `ORDER_NOT_APPROVED`) both behaved securely; results are tagged `paypal-sandbox`.
 - Latest live run: order `9W579655A7779603T`, run `cmw7edbba0003v4iotkklfbxm`: **human buyer approved; phase B executed on real Sandbox: capture, capture replay, duplicate-capture rejection, refund, refund replay, over-refund rejection and reconciliation all behaved as expected (RT-01..RT-06 PASS; RT-07 reconciliation divergence $100).** Details: `FINAL_HACKATHON_VALIDATION.md` §3; record: `docs/redteam-live-sandbox-run.json`. Real Sandbox runs are never wiped by a demo reset.
-- **Webhook signature verification: LIVE VERIFIED** on 3 real Sandbox deliveries (see `WEBHOOK_SETUP.md`). Still NOT tested live: a real redelivery of the same event id, and the PayPal page's manual order/capture/refund buttons.
+- **Webhook signature verification: LIVE VERIFIED** on 3 real Sandbox deliveries (see `WEBHOOK_SETUP.md`). A real Resend of one event id was delivered and not stored twice (response body not captured). Still NOT tested live: the PayPal page's manual order/capture/refund buttons.
 
 ## 1. PayPal Red Team
 - Targets: **emulator** (always available, clearly labelled) or **sandbox** (needs `PAYPAL_CLIENT_ID/SECRET`; refuses any URL without "sandbox").

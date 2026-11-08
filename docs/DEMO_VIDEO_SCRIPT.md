@@ -11,7 +11,7 @@ Everything on screen must be a genuine recording of the running app. Never show 
 | LLM discovery | **LIVE: Groq LLM, replay-verified** |
 | Defence patch | **LOCAL: simulated shop, human-approved** |
 | Pull request | **PREVIEW ONLY: real GitHub PR not yet created** (or **LIVE: GitHub draft PR** only if one exists) |
-| Webhooks | **LIVE VERIFIED** on 3 real Sandbox events (say real redelivery/duplicate is untested) |
+| Webhooks | **LIVE VERIFIED** on 3 real Sandbox events (a real Resend was delivered and not stored twice; response body not captured) |
 
 ## Shot list with timestamps
 | Time | Screen (record live) | Narration |

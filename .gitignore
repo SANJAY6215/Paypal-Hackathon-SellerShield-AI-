@@ -1,0 +1,13 @@
+node_modules/
+.next/
+.env
+.env.*
+!.env.example
+*.db
+*.db-journal
+*.tsbuildinfo
+# local evidence/work files that should not be published
+*.backup
+*.bak
+.DS_Store
+Thumbs.db

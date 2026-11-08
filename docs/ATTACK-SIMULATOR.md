@@ -1,0 +1,4 @@
+# Attack simulator
+`simulator/rules.ts` holds each business rule twice (`*Vulnerable`, `*Secure`). `Shop` selects the variant per applied fix. Scenarios (`scenarios.ts`) define preconditions, steps, expected/vulnerable behaviour, test data, a reproduction function and a ledger oracle. Fixtures are fixed so runs are repeatable (see tests for exact numbers).
+Ledger invariants (`auditLedger`): over-refund, refund allocation, duplicate request payout, unsettled fulfilment, stacked coupons, oversell, unauthorised refund, missing audit. Chains (`chains.ts`) execute composed sequences and compare against a fully-secure baseline.
+Six weaknesses are seeded (coupon stacking, list-price refunds, replayable refunds, inventory race, pending-as-paid, unrestricted refunds); seven probes (duplicate/expired coupon, negative quantity, refund after cancel, duplicate order, webhook replay, cancel restock, admin ops) hold and are reported as "controls held".

@@ -1,0 +1,312 @@
+// SellerShield AI data model. Default provider: SQLite (zero-setup local run).
+// For PostgreSQL: copy prisma/schema.postgres.prisma over this file (see README).
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id           String   @id @default(cuid())
+  name         String
+  email        String   @unique
+  passwordHash String
+  role         String   @default("analyst") // admin | analyst | viewer
+  createdAt    DateTime @default(now())
+  merchants    Merchant[]
+  auditLogs    AuditLog[]
+}
+
+model Merchant {
+  id           String   @id @default(cuid())
+  ownerId      String
+  owner        User     @relation(fields: [ownerId], references: [id])
+  name         String
+  websiteUrl   String?
+  businessType String   @default("ecommerce")
+  description  String?
+  isDemo       Boolean  @default(false)
+  createdAt    DateTime @default(now())
+  assessments  Assessment[]
+  vulnerabilities Vulnerability[]
+  documents    UploadedDocument[]
+  transactions SandboxTransaction[]
+  memories     AttackMemory[]
+  appState     DemoAppState?
+  redTeamRuns  RedTeamRun[]
+  discoveryRuns DiscoveryRun[]
+  reports      Report[]
+  auditLogs    AuditLog[]
+  @@index([ownerId])
+}
+
+// State of the controlled sample application: applied verified fixes + business-rule config.
+model DemoAppState {
+  id         String   @id @default(cuid())
+  merchantId String   @unique
+  merchant   Merchant @relation(fields: [merchantId], references: [id], onDelete: Cascade)
+  fixes      Json     // string[] of applied fix ids
+  config     Json     // business-rule overrides
+  history    Json     // rollback snapshots [{at, action, fixes, config}]
+  updatedAt  DateTime @updatedAt
+}
+
+model UploadedDocument {
+  id         String   @id @default(cuid())
+  merchantId String
+  merchant   Merchant @relation(fields: [merchantId], references: [id], onDelete: Cascade)
+  filename   String
+  kind       String
+  sizeBytes  Int
+  sha256     String
+  content    String   // validated text; never executed
+  createdAt  DateTime @default(now())
+  @@index([merchantId])
+}
+
+model Assessment {
+  id             String   @id @default(cuid())
+  merchantId     String
+  merchant       Merchant @relation(fields: [merchantId], references: [id], onDelete: Cascade)
+  status         String   @default("queued") // queued|running|completed|failed
+  assessmentMode String   @default("demo")   // demo|website|regression
+  isDemoData     Boolean  @default(false)
+  startedAt      DateTime?
+  completedAt    DateTime?
+  summary        Json?
+  createdAt      DateTime @default(now())
+  agentRuns      AgentRun[]
+  vulnerabilities Vulnerability[]
+  chains         AttackChain[]
+  @@index([merchantId])
+}
+
+model AgentRun {
+  id           String   @id @default(cuid())
+  assessmentId String
+  assessment   Assessment @relation(fields: [assessmentId], references: [id], onDelete: Cascade)
+  agentType    String
+  status       String   @default("idle")
+  task         String?
+  progressDone Int      @default(0)
+  progressTotal Int     @default(0)
+  output       Json?
+  log          Json?
+  startedAt    DateTime?
+  completedAt  DateTime?
+  @@index([assessmentId])
+}
+
+model Vulnerability {
+  id            String   @id @default(cuid())
+  merchantId    String
+  merchant      Merchant @relation(fields: [merchantId], references: [id], onDelete: Cascade)
+  assessmentId  String
+  assessment    Assessment @relation(fields: [assessmentId], references: [id], onDelete: Cascade)
+  testCaseId    String
+  title         String
+  category      String
+  severity      String
+  confidence    Float
+  description   String
+  businessRule  String
+  rootCause     String
+  evidence      Json
+  reproductionSteps Json
+  exposure      Json?
+  agentType     String
+  status        String   @default("detected") // detected|verified|rejected|fixed|resolved|reintroduced
+  lifecycle     String   @default("new")      // new|known|reintroduced
+  auditorNote   String?
+  verifiedAt    DateTime?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  steps         AttackStep[]
+  defences      Defence[]
+  memories      AttackMemory[]
+  @@unique([merchantId, testCaseId])
+  @@index([assessmentId])
+}
+
+model AttackChain {
+  id               String   @id @default(cuid())
+  assessmentId     String
+  assessment       Assessment @relation(fields: [assessmentId], references: [id], onDelete: Cascade)
+  signature        String
+  title            String
+  severity         String
+  description      String
+  estimatedExposure Float
+  exposure         Json?
+  graph            Json
+  expectedOutcome  Json
+  actualOutcome    Json
+  status           String   @default("verified") // verified|mitigated|rejected
+  lifecycle        String   @default("new")
+  createdAt        DateTime @default(now())
+  steps            AttackStep[]
+  memories         AttackMemory[]
+  @@index([assessmentId])
+}
+
+model AttackStep {
+  id              String   @id @default(cuid())
+  attackChainId   String
+  attackChain     AttackChain @relation(fields: [attackChainId], references: [id], onDelete: Cascade)
+  vulnerabilityId String?
+  vulnerability   Vulnerability? @relation(fields: [vulnerabilityId], references: [id])
+  sequence        Int
+  action          String
+  expectedResult  String
+  actualResult    String
+  evidence        Json
+  @@index([attackChainId])
+}
+
+model Defence {
+  id            String   @id @default(cuid())
+  vulnerabilityId String
+  vulnerability Vulnerability @relation(fields: [vulnerabilityId], references: [id], onDelete: Cascade)
+  fixId         String
+  proposedFix   String
+  patch         String
+  explanation   String
+  tradeoffs     Json
+  remediationPlan Json
+  aiGenerated   Boolean  @default(false)
+  status        String   @default("proposed") // proposed|approved|applied|verified|failed|rolled_back
+  dryRun        Json?
+  approvedAt    DateTime?
+  approvedBy    String?
+  appliedAt     DateTime?
+  rolledBackAt  DateTime?
+  prUrl         String?
+  prNumber      Int?
+  prBranch      String?
+  createdAt     DateTime @default(now())
+  tests         RegressionTest[]
+  @@index([vulnerabilityId])
+}
+
+model RegressionTest {
+  id             String   @id @default(cuid())
+  defenceId      String
+  defence        Defence  @relation(fields: [defenceId], references: [id], onDelete: Cascade)
+  testName       String
+  kind           String   // original-attack|secure-behaviour|legitimate|regression
+  testInput      Json
+  expectedResult String
+  actualResult   String
+  status         String   // passed|failed
+  executedAt     DateTime @default(now())
+  @@index([defenceId])
+}
+
+model SandboxTransaction {
+  id            String   @id @default(cuid())
+  merchantId    String
+  merchant      Merchant @relation(fields: [merchantId], references: [id], onDelete: Cascade)
+  paypalOrderId String   @unique
+  captureId     String?
+  refundId      String?
+  amount        Float
+  currency      String   @default("USD")
+  refundedAmount Float   @default(0)
+  status        String
+  environment   String   // sandbox | local-simulation
+  approvalUrl   String?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  @@index([merchantId])
+}
+
+model WebhookEvent {
+  id                 String   @id @default(cuid())
+  eventId            String   @unique
+  eventType          String
+  verificationStatus String   // verified|verified_local_simulation|failed|unverifiable
+  processingStatus   String   // processed|rejected_unverified|ignored
+  relatedId          String?
+  payload            Json
+  receivedAt         DateTime @default(now())
+}
+
+model IdempotencyKey {
+  key       String   @id
+  scope     String
+  response  Json
+  createdAt DateTime @default(now())
+}
+
+model AttackMemory {
+  id              String   @id @default(cuid())
+  merchantId      String
+  merchant        Merchant @relation(fields: [merchantId], references: [id], onDelete: Cascade)
+  vulnerabilityId String?
+  vulnerability   Vulnerability? @relation(fields: [vulnerabilityId], references: [id])
+  attackChainId   String?
+  attackChain     AttackChain? @relation(fields: [attackChainId], references: [id])
+  kind            String   // finding|chain|defence|regression|rerun
+  testCase        Json
+  result          String
+  note            String?
+  createdAt       DateTime @default(now())
+  @@index([merchantId])
+}
+
+model Report {
+  id         String   @id @default(cuid())
+  merchantId String
+  merchant   Merchant @relation(fields: [merchantId], references: [id], onDelete: Cascade)
+  title      String
+  content    Json
+  createdAt  DateTime @default(now())
+}
+
+model AuditLog {
+  id           String   @id @default(cuid())
+  userId       String?
+  user         User?    @relation(fields: [userId], references: [id])
+  merchantId   String?
+  merchant     Merchant? @relation(fields: [merchantId], references: [id])
+  action       String
+  resourceType String
+  resourceId   String?
+  metadata     Json?
+  createdAt    DateTime @default(now())
+  @@index([merchantId])
+}
+
+// Live PayPal red-team run: probes against PayPal Sandbox (or the clearly-labelled local emulator).
+model RedTeamRun {
+  id          String   @id @default(cuid())
+  merchantId  String
+  merchant    Merchant @relation(fields: [merchantId], references: [id], onDelete: Cascade)
+  mode        String   // sandbox | emulator
+  status      String   // awaiting_approval | running | completed | failed
+  approvalUrl String?
+  state       Json     // ids needed to continue (order/capture/refund)
+  results     Json     // probe results
+  baseUrl     String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  @@index([merchantId])
+}
+
+// Attack Discovery Lab run: an LLM tool-use attacker or a deterministic guided search.
+model DiscoveryRun {
+  id         String   @id @default(cuid())
+  merchantId String
+  merchant   Merchant @relation(fields: [merchantId], references: [id], onDelete: Cascade)
+  engine     String   // llm | search
+  status     String   // running | completed | failed
+  findings   Json
+  trace      Json
+  stats      Json
+  createdAt  DateTime @default(now())
+  completedAt DateTime?
+  @@index([merchantId])
+}

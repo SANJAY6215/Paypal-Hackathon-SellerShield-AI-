@@ -1,0 +1,15 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+html, body { background: #080d19; color: #e6ebf7; }
+body { font-feature-settings: 'cv11', 'ss01'; -webkit-font-smoothing: antialiased; }
+::selection { background: #1d4ed8; }
+* { scrollbar-width: thin; scrollbar-color: #26355a transparent; }
+.react-flow__attribution { display: none !important; }
+.react-flow__controls button { background: #121c31; border-color: #1d2943; fill: #e6ebf7; }
+.react-flow__controls button:hover { background: #1d2943; }
+.react-flow__edge-path { stroke-width: 1.6; }
+@keyframes pulseDot { 0%, 100% { opacity: 1 } 50% { opacity: .35 } }
+.pulse-dot { animation: pulseDot 1.4s ease-in-out infinite; }
+@media (prefers-reduced-motion: reduce) { .pulse-dot { animation: none; } }

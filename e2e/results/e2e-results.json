@@ -1,0 +1,167 @@
+{
+  "at": "2026-11-08T06:36:52.461Z",
+  "results": [
+    {
+      "id": 1,
+      "name": "Homepage loads",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "id": 2,
+      "name": "Explore Live Demo opens the demo workspace",
+      "status": "PASS",
+      "detail": "http://localhost:3000/demo"
+    },
+    {
+      "id": 3,
+      "name": "Run Live Demo starts an assessment",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "id": 4,
+      "name": "Six agents execute and complete",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "id": 5,
+      "name": "Six security findings appear",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "id": 6,
+      "name": "Compound attack chains appear",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "id": 7,
+      "name": "Financial exposure matches verified values ($154 excess; $80 expected; -$74 actual)",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "id": 8,
+      "name": "Auditor verdicts are displayed",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "id": 11,
+      "name": "Patch diffs display (unified diff of real rule source)",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "id": 13,
+      "name": "Explicit confirmation required (button disabled until checkbox ticked)",
+      "status": "PASS",
+      "detail": "before disabled=true, after=false"
+    },
+    {
+      "id": 12,
+      "name": "Approval workflow works",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "id": 14,
+      "name": "Patch application works (3 chain fixes now in force)",
+      "status": "PASS",
+      "detail": "refund-calc,refund-idempotency,coupon-stacking"
+    },
+    {
+      "id": 16,
+      "name": "Original attack is blocked after fixes (excess now $0.00)",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "id": 15,
+      "name": "Rollback works (fix removed, vulnerability reopened)",
+      "status": "PASS",
+      "detail": "applyDisabledBeforeConfirm=true, inForceAfterApply=true, inForceAfterRollback=false, vulnStatus=verified"
+    },
+    {
+      "id": 17,
+      "name": "Regression memory reruns saved tests",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "id": 18,
+      "name": "Reintroduced vulnerability detected (DISC-001)",
+      "status": "PASS",
+      "detail": "toggled=true, cfg={\"stackableCoupons\":true}, textHit=false, disc=true"
+    },
+    {
+      "id": 19,
+      "name": "Reports open (preview, JSON and PDF)",
+      "status": "PASS",
+      "detail": "pdf 10046 bytes"
+    },
+    {
+      "id": 20,
+      "name": "No broken navigation (13 routes render)",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "id": "20b",
+      "name": "Sidebar links resolve",
+      "status": "PASS",
+      "detail": "13 links"
+    },
+    {
+      "id": "20c",
+      "name": "Tablet/desktop layouts have no horizontal page overflow (1024 and 768 wide)",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "id": "21",
+      "name": "PayPal Sandbox connection: real OAuth succeeds",
+      "status": "PASS",
+      "detail": "mode=sandbox oauth=ok (self-test not run to avoid creating real Sandbox orders)"
+    },
+    {
+      "id": "22",
+      "name": "LLM attacker option is enabled when a provider key is configured (not run here: avoids spending free-tier tokens)",
+      "status": "PASS",
+      "detail": "providers=groq"
+    },
+    {
+      "id": "23",
+      "name": "Discovery Lab (guided search) finds \"Cancel-for-Cash\" as NOVEL, verified",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "id": "24",
+      "name": "After applying payment-state, rerun no longer finds Cancel-for-Cash",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "id": "25",
+      "name": "PayPal Red Team (emulator) runs, labels source, flags ledger divergence",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "id": "26",
+      "name": "Defence-as-PR preview shows patch + regression test + report; cannot open without GitHub config",
+      "status": "PASS",
+      "detail": "openDisabled=true"
+    }
+  ],
+  "badResponses": [
+    "500 POST /api/demo/reset"
+  ],
+  "consoleErrors": [
+    "Failed to load resource: the server responded with a status of 500 (Internal Server Error)"
+  ]
+}

@@ -1,0 +1,711 @@
+{
+  "startedAt": "2026-11-08T05:05:31.670Z",
+  "live": true,
+  "env": {
+    "GEMINI_API_KEY": true,
+    "GROQ_API_KEY": true,
+    "ANTHROPIC_API_KEY_still_configured": false,
+    "providerOrder": [
+      "gemini:gemini-2.5-flash",
+      "groq:openai/gpt-oss-120b"
+    ]
+  },
+  "models": {
+    "gemini": {
+      "configured": "gemini-2.5-flash",
+      "listedModels": 61,
+      "configuredModelExists": true,
+      "suggestions": []
+    },
+    "groq": {
+      "configured": "openai/gpt-oss-120b",
+      "listedModels": 11,
+      "configuredModelExists": true,
+      "suggestions": []
+    }
+  },
+  "providers": {
+    "gemini": {
+      "basic": {
+        "ok": false,
+        "error": "HTTP 403 (key rejected)"
+      },
+      "toolCall": {
+        "ok": false,
+        "error": "HTTP 403 (key rejected)"
+      },
+      "structuredJson": {
+        "ok": false,
+        "error": "HTTP 403 (key rejected)"
+      }
+    },
+    "groq": {
+      "basic": {
+        "ok": true,
+        "reply": ""
+      },
+      "toolCall": {
+        "requested": true,
+        "name": "add_numbers",
+        "argsParsed": {
+          "a": 2,
+          "b": 3
+        },
+        "argsCorrect": true,
+        "finalAnswerMentions5": true
+      },
+      "structuredJson": {
+        "ok": false,
+        "error": "HTTP 400 (bad request)"
+      }
+    }
+  },
+  "structuredViaApp": {
+    "ok": true,
+    "parsed": {
+      "hypotheses": [
+        {
+          "testCaseId": "REFUND-001",
+          "rationale": "short reason"
+        }
+      ]
+    },
+    "latencyMs": 978,
+    "aiStatus": {
+      "configured": true,
+      "provider": "gemini → groq",
+      "model": "gemini-2.5-flash",
+      "mode": "ai-assisted"
+    }
+  },
+  "explainViaApp": {
+    "ok": true,
+    "chars": 228
+  },
+  "failover": {
+    "gemini": {
+      "provider": "gemini",
+      "reason": "HTTP 400 (bad request)"
+    },
+    "groqAnswered": true,
+    "failovers": [
+      {
+        "provider": "gemini",
+        "reason": "HTTP 400 (bad request)"
+      }
+    ],
+    "note": "Gemini was called LIVE with a deliberately invalid key (real rejection); Groq answered LIVE."
+  },
+  "timeout": {
+    "provider": "gemini",
+    "triggered": true,
+    "reason": "timeout",
+    "note": "client-side abort against the live endpoint (1 ms limit)"
+  },
+  "rateLimit": {
+    "liveTested": false,
+    "note": "HTTP 429 handling is covered by MOCK tests only (backend/tests/failover.test.ts). Rate limits were not provoked on the live free tiers."
+  },
+  "discovery": {
+    "wallMs": 122638,
+    "turns": 18,
+    "providersUsed": [
+      "groq"
+    ],
+    "failovers": [
+      {
+        "provider": "gemini",
+        "reason": "HTTP 403 (key rejected)"
+      }
+    ],
+    "verified": 1,
+    "rejected": [
+      {
+        "title": "LLM attack (attempt 2)",
+        "reason": "Replay on vulnerable shop loses more money than secure baseline; Ledger invariant violated"
+      }
+    ],
+    "trace": [
+      "info: Attempt 1: Focus on payment-state and cancellation workflows.",
+      "info: Using provider gemini (gemini-2.5-flash)",
+      "info: Provider gemini failed: HTTP 403 (key rejected). Failing over to groq.",
+      "info: Using provider groq (openai/gpt-oss-120b)",
+      "tool_call: create_order {\"coupons\":[\"SAVE20\"],\"lines\":[{\"qty\":1,\"sku\":\"NC-HEADSET\"}]}",
+      "tool_call: payment_event {\"event\":\"COMPLETED\",\"order\":\"o1\"}",
+      "tool_call: refund {\"actor\":\"admin\",\"order\":\"o1\",\"qty\":1,\"sku\":\"NC-HEADSET\"}",
+      "tool_call: report_attack {\"rationale\":\"Created an order for a $120 headset with a 20% coupon, paid $96. Then issued an admin refund for the full $120, exceeding the amount received. This violates the rule that refunds must never exceed what was paid, causing a",
+      "verdict: VERIFIED: Over-refund Headset - excess $24 (novel)",
+      "info: Attempt 2: Focus on refunds, idempotency keys and staff roles.",
+      "info: Using provider groq (openai/gpt-oss-120b)",
+      "tool_call: create_order {\"coupons\":[\"SAVE20\"],\"idemKey\":\"order1\",\"lines\":[{\"qty\":1,\"sku\":\"NC-HEADSET\"}]}",
+      "info: groq rate limited (429); waiting 1.3s then retrying (1/5)",
+      "info: groq rate limited (429); waiting 1.3s then retrying (2/5)",
+      "tool_call: payment_event {\"event\":\"COMPLETED\",\"order\":\"o1\"}",
+      "info: groq rate limited (429); waiting 2.3s then retrying (1/5)",
+      "tool_call: cancel {\"actor\":\"admin\",\"order\":\"o1\"}",
+      "info: groq rate limited (429); waiting 4.3s then retrying (1/5)",
+      "tool_call: refund {\"actor\":\"intern\",\"order\":\"o1\",\"qty\":1,\"sku\":\"NC-HEADSET\"}",
+      "info: groq rate limited (429); waiting 8.3s then retrying (1/5)",
+      "info: groq rate limited (429); waiting 1.3s then retrying (2/5)",
+      "tool_call: refund {\"actor\":\"admin\",\"order\":\"o1\",\"qty\":1,\"sku\":\"NC-HEADSET\"}",
+      "info: groq rate limited (429); waiting 5.3s then retrying (1/5)",
+      "tool_call: refund {\"actor\":\"manager\",\"order\":\"o1\",\"qty\":1,\"sku\":\"NC-HEADSET\"}",
+      "info: groq rate limited (429); waiting 9.3s then retrying (1/5)",
+      "tool_call: create_order {\"coupons\":[\"WELCOME10\"],\"idemKey\":\"order2\",\"lines\":[{\"qty\":1,\"sku\":\"NC-HEADSET\"}]}",
+      "info: groq rate limited (429); waiting 3.3s then retrying (1/5)",
+      "tool_call: update_coupon {\"actor\":\"admin\",\"code\":\"SAVE20\",\"value\":200}",
+      "info: groq rate limited (429); waiting 3.3s then retrying (1/5)",
+      "tool_call: create_order {\"coupons\":[\"SAVE20\"],\"idemKey\":\"order3\",\"lines\":[{\"qty\":1,\"sku\":\"NC-HEADSET\"}]}",
+      "info: groq rate limited (429); waiting 8.3s then retrying (1/5)",
+      "tool_call: create_order {\"coupons\":[],\"idemKey\":\"order1\",\"lines\":[{\"qty\":1,\"sku\":\"NC-USB\"}]}",
+      "info: groq rate limited (429); waiting 11.3s then retrying (1/5)",
+      "tool_call: refund {\"actor\":\"manager\",\"order\":\"o3\",\"qty\":2,\"sku\":\"NC-HEADSET\"}",
+      "info: groq rate limited (429); waiting 9.3s then retrying (1/5)",
+      "info: groq rate limited (429); waiting 1.3s then retrying (2/5)",
+      "tool_call: payment_event {\"event\":\"COMPLETED\",\"order\":\"o1\"}",
+      "info: groq rate limited (429); waiting 13.3s then retrying (1/5)",
+      "tool_call: refund {\"actor\":\"admin\",\"order\":\"o1\",\"qty\":1,\"sku\":\"NC-HEADSET\"}",
+      "info: groq rate limited (429); waiting 9.3s then retrying (1/5)",
+      "info: groq rate limited (429); waiting 1.3s then retrying (2/5)",
+      "tool_call: update_coupon {\"actor\":\"admin\",\"code\":\"SAVE20\",\"value\":-20}",
+      "verdict: REJECTED: LLM attack (attempt 2) - Replay on vulnerable shop loses more money than secure baseline; Ledger invariant violated"
+    ]
+  },
+  "verification": [
+    {
+      "title": "Over-refund Headset",
+      "novelty": "novel",
+      "rationale": "Created an order for a $120 headset with a 20% coupon, paid $96. Then issued an admin refund for the full $120, exceeding the amount received. This violates the rule that refunds must never exceed what was paid, causing a $24 loss.",
+      "sequence": [
+        {
+          "tool": "create_order",
+          "lines": [
+            {
+              "sku": "NC-HEADSET",
+              "qty": 1
+            }
+          ],
+          "coupons": [
+            "SAVE20"
+          ]
+        },
+        {
+          "tool": "payment_event",
+          "order": "o1",
+          "event": "COMPLETED"
+        },
+        {
+          "tool": "refund",
+          "order": "o1",
+          "sku": "NC-HEADSET",
+          "qty": 1,
+          "actor": "admin"
+        }
+      ],
+      "actions": [
+        "create_order",
+        "payment_event",
+        "refund"
+      ],
+      "vulnerableShop": {
+        "excess": 24,
+        "position": -24,
+        "violations": [
+          "missing-audit",
+          "over-refund",
+          "refund-allocation",
+          "refund-without-settlement"
+        ]
+      },
+      "secureShop": {
+        "excess": 0,
+        "position": 0
+      },
+      "reverified": true,
+      "blockedBy": [
+        [
+          "refund-calc"
+        ],
+        [
+          "refund-permission"
+        ]
+      ]
+    }
+  ],
+  "finishedAt": "2026-11-08T05:07:43.831Z",
+  "calls": [
+    {
+      "provider": "gemini",
+      "model": "gemini-2.5-flash",
+      "latencyMs": 510,
+      "status": 403,
+      "error": "HTTP 403 (key rejected): [{\n  \"error\": {\n    \"code\": 403,\n    \"message\": \"The Gemini API free tier is not available for this project. To use the Gemini API, please set up billing to upg",
+      "step": "gemini:basic"
+    },
+    {
+      "provider": "gemini",
+      "model": "gemini-2.5-flash",
+      "latencyMs": 409,
+      "status": 403,
+      "error": "HTTP 403 (key rejected): [{\n  \"error\": {\n    \"code\": 403,\n    \"message\": \"The Gemini API free tier is not available for this project. To use the Gemini API, please set up billing to upg",
+      "step": "gemini:tools"
+    },
+    {
+      "provider": "gemini",
+      "model": "gemini-2.5-flash",
+      "latencyMs": 357,
+      "status": 403,
+      "error": "HTTP 403 (key rejected): [{\n  \"error\": {\n    \"code\": 403,\n    \"message\": \"The Gemini API free tier is not available for this project. To use the Gemini API, please set up billing to upg",
+      "step": "gemini:json"
+    },
+    {
+      "provider": "groq",
+      "model": "openai/gpt-oss-120b",
+      "latencyMs": 358,
+      "status": 200,
+      "usage": {
+        "prompt": 78,
+        "completion": 20,
+        "total": 98
+      },
+      "step": "groq:basic"
+    },
+    {
+      "provider": "groq",
+      "model": "openai/gpt-oss-120b",
+      "latencyMs": 571,
+      "status": 200,
+      "usage": {
+        "prompt": 140,
+        "completion": 55,
+        "total": 195
+      },
+      "step": "groq:tools"
+    },
+    {
+      "provider": "groq",
+      "model": "openai/gpt-oss-120b",
+      "latencyMs": 451,
+      "status": 200,
+      "usage": {
+        "prompt": 174,
+        "completion": 31,
+        "total": 205
+      },
+      "step": "groq:tools"
+    },
+    {
+      "provider": "groq",
+      "model": "openai/gpt-oss-120b",
+      "latencyMs": 458,
+      "status": 400,
+      "error": "HTTP 400 (bad request): {\"error\":{\"message\":\"Failed to validate JSON. Please adjust your prompt. See 'failed_generation' for more details.\",\"type\":\"invalid_request_error\",\"code\":\"json_",
+      "step": "groq:json"
+    },
+    {
+      "provider": "gemini",
+      "model": "gemini-2.5-flash",
+      "latencyMs": 204,
+      "status": 400,
+      "error": "HTTP 400 (bad request): [{\n  \"error\": {\n    \"code\": 400,\n    \"message\": \"Please pass a valid API key\",\n    \"status\": \"INVALID_ARGUMENT\"\n  }\n}\n]",
+      "step": "failover"
+    },
+    {
+      "provider": "groq",
+      "model": "openai/gpt-oss-120b",
+      "latencyMs": 1639,
+      "status": 200,
+      "usage": {
+        "prompt": 725,
+        "completion": 546,
+        "total": 1271
+      },
+      "step": "failover"
+    },
+    {
+      "provider": "groq",
+      "model": "openai/gpt-oss-120b",
+      "latencyMs": 1265,
+      "status": 200,
+      "usage": {
+        "prompt": 808,
+        "completion": 421,
+        "total": 1229
+      },
+      "step": "failover"
+    },
+    {
+      "provider": "gemini",
+      "model": "gemini-2.5-flash",
+      "latencyMs": 2,
+      "status": "error",
+      "error": "timeout",
+      "step": "timeout"
+    },
+    {
+      "provider": "gemini",
+      "model": "gemini-2.5-flash",
+      "latencyMs": 368,
+      "status": 403,
+      "error": "HTTP 403 (key rejected): [{\n  \"error\": {\n    \"code\": 403,\n    \"message\": \"The Gemini API free tier is not available for this project. To use the Gemini API, please set up billing to upg",
+      "step": "discovery"
+    },
+    {
+      "provider": "groq",
+      "model": "openai/gpt-oss-120b",
+      "latencyMs": 1229,
+      "status": 200,
+      "usage": {
+        "prompt": 725,
+        "completion": 443,
+        "total": 1168
+      },
+      "step": "discovery"
+    },
+    {
+      "provider": "groq",
+      "model": "openai/gpt-oss-120b",
+      "latencyMs": 835,
+      "status": 200,
+      "usage": {
+        "prompt": 815,
+        "completion": 159,
+        "total": 974
+      },
+      "step": "discovery"
+    },
+    {
+      "provider": "groq",
+      "model": "openai/gpt-oss-120b",
+      "latencyMs": 803,
+      "status": 200,
+      "usage": {
+        "prompt": 866,
+        "completion": 162,
+        "total": 1028
+      },
+      "step": "discovery"
+    },
+    {
+      "provider": "groq",
+      "model": "openai/gpt-oss-120b",
+      "latencyMs": 830,
+      "status": 200,
+      "usage": {
+        "prompt": 931,
+        "completion": 184,
+        "total": 1115
+      },
+      "step": "discovery"
+    },
+    {
+      "provider": "groq",
+      "model": "openai/gpt-oss-120b",
+      "latencyMs": 1622,
+      "status": 200,
+      "usage": {
+        "prompt": 729,
+        "completion": 524,
+        "total": 1253
+      },
+      "step": "discovery"
+    },
+    {
+      "provider": "groq",
+      "model": "openai/gpt-oss-120b",
+      "latencyMs": 104,
+      "status": 429,
+      "error": "HTTP 429 (rate limited): {\"error\":{\"message\":\"Rate limit reached for model `openai/gpt-oss-120b` in organization `org_01kvx5gp6kf37rwgnkkb1w7fkb` service tier `on_demand` on tokens per ",
+      "step": "discovery"
+    },
+    {
+      "provider": "groq",
+      "model": "openai/gpt-oss-120b",
+      "latencyMs": 128,
+      "status": 429,
+      "error": "HTTP 429 (rate limited): {\"error\":{\"message\":\"Rate limit reached for model `openai/gpt-oss-120b` in organization `org_01kvx5gp6kf37rwgnkkb1w7fkb` service tier `on_demand` on tokens per ",
+      "step": "discovery"
+    },
+    {
+      "provider": "groq",
+      "model": "openai/gpt-oss-120b",
+      "latencyMs": 935,
+      "status": 200,
+      "usage": {
+        "prompt": 825,
+        "completion": 72,
+        "total": 897
+      },
+      "step": "discovery"
+    },
+    {
+      "provider": "groq",
+      "model": "openai/gpt-oss-120b",
+      "latencyMs": 105,
+      "status": 429,
+      "error": "HTTP 429 (rate limited): {\"error\":{\"message\":\"Rate limit reached for model `openai/gpt-oss-120b` in organization `org_01kvx5gp6kf37rwgnkkb1w7fkb` service tier `on_demand` on tokens per ",
+      "step": "discovery"
+    },
+    {
+      "provider": "groq",
+      "model": "openai/gpt-oss-120b",
+      "latencyMs": 1179,
+      "status": 200,
+      "usage": {
+        "prompt": 876,
+        "completion": 381,
+        "total": 1257
+      },
+      "step": "discovery"
+    },
+    {
+      "provider": "groq",
+      "model": "openai/gpt-oss-120b",
+      "latencyMs": 102,
+      "status": 429,
+      "error": "HTTP 429 (rate limited): {\"error\":{\"message\":\"Rate limit reached for model `openai/gpt-oss-120b` in organization `org_01kvx5gp6kf37rwgnkkb1w7fkb` service tier `on_demand` on tokens per ",
+      "step": "discovery"
+    },
+    {
+      "provider": "groq",
+      "model": "openai/gpt-oss-120b",
+      "latencyMs": 1630,
+      "status": 200,
+      "usage": {
+        "prompt": 926,
+        "completion": 476,
+        "total": 1402
+      },
+      "step": "discovery"
+    },
+    {
+      "provider": "groq",
+      "model": "openai/gpt-oss-120b",
+      "latencyMs": 103,
+      "status": 429,
+      "error": "HTTP 429 (rate limited): {\"error\":{\"message\":\"Rate limit reached for model `openai/gpt-oss-120b` in organization `org_01kvx5gp6kf37rwgnkkb1w7fkb` service tier `on_demand` on tokens per ",
+      "step": "discovery"
+    },
+    {
+      "provider": "groq",
+      "model": "openai/gpt-oss-120b",
+      "latencyMs": 300,
+      "status": 429,
+      "error": "HTTP 429 (rate limited): {\"error\":{\"message\":\"Rate limit reached for model `openai/gpt-oss-120b` in organization `org_01kvx5gp6kf37rwgnkkb1w7fkb` service tier `on_demand` on tokens per ",
+      "step": "discovery"
+    },
+    {
+      "provider": "groq",
+      "model": "openai/gpt-oss-120b",
+      "latencyMs": 957,
+      "status": 200,
+      "usage": {
+        "prompt": 987,
+        "completion": 276,
+        "total": 1263
+      },
+      "step": "discovery"
+    },
+    {
+      "provider": "groq",
+      "model": "openai/gpt-oss-120b",
+      "latencyMs": 91,
+      "status": 429,
+      "error": "HTTP 429 (rate limited): {\"error\":{\"message\":\"Rate limit reached for model `openai/gpt-oss-120b` in organization `org_01kvx5gp6kf37rwgnkkb1w7fkb` service tier `on_demand` on tokens per ",
+      "step": "discovery"
+    },
+    {
+      "provider": "groq",
+      "model": "openai/gpt-oss-120b",
+      "latencyMs": 1249,
+      "status": 200,
+      "usage": {
+        "prompt": 1048,
+        "completion": 282,
+        "total": 1330
+      },
+      "step": "discovery"
+    },
+    {
+      "provider": "groq",
+      "model": "openai/gpt-oss-120b",
+      "latencyMs": 93,
+      "status": 429,
+      "error": "HTTP 429 (rate limited): {\"error\":{\"message\":\"Rate limit reached for model `openai/gpt-oss-120b` in organization `org_01kvx5gp6kf37rwgnkkb1w7fkb` service tier `on_demand` on tokens per ",
+      "step": "discovery"
+    },
+    {
+      "provider": "groq",
+      "model": "openai/gpt-oss-120b",
+      "latencyMs": 1854,
+      "status": 200,
+      "usage": {
+        "prompt": 1109,
+        "completion": 400,
+        "total": 1509
+      },
+      "step": "discovery"
+    },
+    {
+      "provider": "groq",
+      "model": "openai/gpt-oss-120b",
+      "latencyMs": 102,
+      "status": 429,
+      "error": "HTTP 429 (rate limited): {\"error\":{\"message\":\"Rate limit reached for model `openai/gpt-oss-120b` in organization `org_01kvx5gp6kf37rwgnkkb1w7fkb` service tier `on_demand` on tokens per ",
+      "step": "discovery"
+    },
+    {
+      "provider": "groq",
+      "model": "openai/gpt-oss-120b",
+      "latencyMs": 1499,
+      "status": 200,
+      "usage": {
+        "prompt": 1205,
+        "completion": 399,
+        "total": 1604
+      },
+      "step": "discovery"
+    },
+    {
+      "provider": "groq",
+      "model": "openai/gpt-oss-120b",
+      "latencyMs": 105,
+      "status": 429,
+      "error": "HTTP 429 (rate limited): {\"error\":{\"message\":\"Rate limit reached for model `openai/gpt-oss-120b` in organization `org_01kvx5gp6kf37rwgnkkb1w7fkb` service tier `on_demand` on tokens per ",
+      "step": "discovery"
+    },
+    {
+      "provider": "groq",
+      "model": "openai/gpt-oss-120b",
+      "latencyMs": 2425,
+      "status": 200,
+      "usage": {
+        "prompt": 1255,
+        "completion": 604,
+        "total": 1859
+      },
+      "step": "discovery"
+    },
+    {
+      "provider": "groq",
+      "model": "openai/gpt-oss-120b",
+      "latencyMs": 102,
+      "status": 429,
+      "error": "HTTP 429 (rate limited): {\"error\":{\"message\":\"Rate limit reached for model `openai/gpt-oss-120b` in organization `org_01kvx5gp6kf37rwgnkkb1w7fkb` service tier `on_demand` on tokens per ",
+      "step": "discovery"
+    },
+    {
+      "provider": "groq",
+      "model": "openai/gpt-oss-120b",
+      "latencyMs": 1006,
+      "status": 200,
+      "usage": {
+        "prompt": 1351,
+        "completion": 159,
+        "total": 1510
+      },
+      "step": "discovery"
+    },
+    {
+      "provider": "groq",
+      "model": "openai/gpt-oss-120b",
+      "latencyMs": 103,
+      "status": 429,
+      "error": "HTTP 429 (rate limited): {\"error\":{\"message\":\"Rate limit reached for model `openai/gpt-oss-120b` in organization `org_01kvx5gp6kf37rwgnkkb1w7fkb` service tier `on_demand` on tokens per ",
+      "step": "discovery"
+    },
+    {
+      "provider": "groq",
+      "model": "openai/gpt-oss-120b",
+      "latencyMs": 2210,
+      "status": 200,
+      "usage": {
+        "prompt": 1443,
+        "completion": 622,
+        "total": 2065
+      },
+      "step": "discovery"
+    },
+    {
+      "provider": "groq",
+      "model": "openai/gpt-oss-120b",
+      "latencyMs": 91,
+      "status": 429,
+      "error": "HTTP 429 (rate limited): {\"error\":{\"message\":\"Rate limit reached for model `openai/gpt-oss-120b` in organization `org_01kvx5gp6kf37rwgnkkb1w7fkb` service tier `on_demand` on tokens per ",
+      "step": "discovery"
+    },
+    {
+      "provider": "groq",
+      "model": "openai/gpt-oss-120b",
+      "latencyMs": 337,
+      "status": 429,
+      "error": "HTTP 429 (rate limited): {\"error\":{\"message\":\"Rate limit reached for model `openai/gpt-oss-120b` in organization `org_01kvx5gp6kf37rwgnkkb1w7fkb` service tier `on_demand` on tokens per ",
+      "step": "discovery"
+    },
+    {
+      "provider": "groq",
+      "model": "openai/gpt-oss-120b",
+      "latencyMs": 1353,
+      "status": 200,
+      "usage": {
+        "prompt": 1504,
+        "completion": 485,
+        "total": 1989
+      },
+      "step": "discovery"
+    },
+    {
+      "provider": "groq",
+      "model": "openai/gpt-oss-120b",
+      "latencyMs": 102,
+      "status": 429,
+      "error": "HTTP 429 (rate limited): {\"error\":{\"message\":\"Rate limit reached for model `openai/gpt-oss-120b` in organization `org_01kvx5gp6kf37rwgnkkb1w7fkb` service tier `on_demand` on tokens per ",
+      "step": "discovery"
+    },
+    {
+      "provider": "groq",
+      "model": "openai/gpt-oss-120b",
+      "latencyMs": 2268,
+      "status": 200,
+      "usage": {
+        "prompt": 1555,
+        "completion": 645,
+        "total": 2200
+      },
+      "step": "discovery"
+    },
+    {
+      "provider": "groq",
+      "model": "openai/gpt-oss-120b",
+      "latencyMs": 97,
+      "status": 429,
+      "error": "HTTP 429 (rate limited): {\"error\":{\"message\":\"Rate limit reached for model `openai/gpt-oss-120b` in organization `org_01kvx5gp6kf37rwgnkkb1w7fkb` service tier `on_demand` on tokens per ",
+      "step": "discovery"
+    },
+    {
+      "provider": "groq",
+      "model": "openai/gpt-oss-120b",
+      "latencyMs": 327,
+      "status": 429,
+      "error": "HTTP 429 (rate limited): {\"error\":{\"message\":\"Rate limit reached for model `openai/gpt-oss-120b` in organization `org_01kvx5gp6kf37rwgnkkb1w7fkb` service tier `on_demand` on tokens per ",
+      "step": "discovery"
+    },
+    {
+      "provider": "groq",
+      "model": "openai/gpt-oss-120b",
+      "latencyMs": 1762,
+      "status": 200,
+      "usage": {
+        "prompt": 1617,
+        "completion": 514,
+        "total": 2131
+      },
+      "step": "discovery"
+    }
+  ],
+  "totals": {
+    "calls": 47,
+    "successful": 23,
+    "totalTokens": 29552
+  }
+}

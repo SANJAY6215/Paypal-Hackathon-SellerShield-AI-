@@ -1,0 +1,20 @@
+# Known Limitations (stated plainly)
+
+1. **Database:** SQLite is used and is the only verified option. The PostgreSQL schema and `docker-compose.yml` exist but have never been run. SQLite is not suitable for multi-instance production.
+2. **PayPal:** real Sandbox OAuth, order creation/idempotency, buyer approval, capture, capture replay, refund, refund replay, over-refund rejection and ledger reconciliation have been run against PayPal Sandbox and passed (2026-11-08). **Webhook signature verification is not yet executed live** (needs a registered webhook and public HTTPS URL). The red team's reconciliation compares against a simulated shop ledger, not a real merchant's books. Without credentials a clearly labelled local simulation runs; its webhooks are signed with a local HMAC, which is *not* PayPal's mechanism.
+3. **AI:** live model calls (hypothesis ordering, explanations) were never executed. All tests and demos use the deterministic planner and template explanations.
+4. **Agents are scenario-driven, not open-ended LLM agents.** They run a fixed library of 13 scenarios against NovaCart. They do not discover novel vulnerability types.
+5. **Scope of simulation:** only the built-in NovaCart application. Website mode reads public pages (homepage, product, policy pages) and reports observations; it does not and cannot test hidden server-side logic. Uploaded files are stored as inert text and are not analysed.
+6. **Patches:** a "patch" is a diff of the sample application's rule source; "apply" switches the simulated app to the secure rule. SellerShield does not modify real merchant code or deploy anything.
+7. **Financial figures** are simulated projections. The per-attack excess is measured in the simulator; the attack frequency (exploitation rate of 1,200 orders/month) is an assumption.
+8. **Jobs** run in-process; a restart marks running assessments failed. No queue or Redis.
+9. **Testing gaps:** no frontend unit tests or lint configuration; the E2E suite is a single Chrome-driven script; forged/unreproducible finding rejection is verified by backend unit tests, not through the UI.
+10. **Security gaps:** dependency advisories (zod, prisma tooling, next/postcss) not upgraded; DNS-rebinding defence not tested against real DNS; demo mode grants an unauthenticated admin session by design.
+11. **Build quirk:** the `@/` TypeScript path alias did not resolve in this environment, so the frontend uses relative imports.
+12. **Demo state:** the demo database is mutable; use **Reset demo** before presenting.
+13. **New features are tested only against local doubles:** the PayPal Red Team ran against a local emulator (not PayPal), the LLM failure paths (429/401/500/malformed tool calls) against local mock servers (the Groq happy path, 429 backoff and failover were also run LIVE, see LLM_LIVE_VALIDATION.md), and Defence-as-PR against a local mock of GitHub. Real Sandbox/Anthropic/GitHub behaviour is unverified. A real model may or may not discover new attacks.
+14. **"Novel" is relative to the scripted library.** Cancel-for-Cash is a new path to the known root cause of PAY-001; the search is bounded (up to 5 actions, a fixed action vocabulary), not open-ended.
+15. **PR content:** the pull request adds the patch file, a regression test and a report; it does not modify application source. Applying it is a human merge decision.
+16. **Emulator exposure:** `/mock-paypal` is mounted unauthenticated outside production (it holds no secrets and only serves the red team); it is disabled in production unless `ENABLE_PAYPAL_EMULATOR=true`.
+17. **Gemini is blocked for the current key** (HTTP 403, free tier unavailable for the project) until billing is enabled or a key from another project is used; the app runs on Groq alone, with rate-limit waits (a discovery session takes about 2 minutes).
+18. **LLM findings can re-find known root causes** and the "novel" label is relative to the scripted scenarios; one live session is not a benchmark.

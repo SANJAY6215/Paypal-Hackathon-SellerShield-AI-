@@ -1,0 +1,117 @@
+{
+  "note": "Real PayPal Sandbox red-team run (2026-11-08). Buyer approval was performed by a human on sandbox.paypal.com. RT-01..RT-06 are real PayPal Sandbox responses; RT-07..RT-09 are SellerShield-side checks. RT-07 was recomputed from the PayPal GET refund record after fixing an amount-parsing bug (see evidence.correctedFrom).",
+  "runId": "cmw7edbba0003v4iotkklfbxm",
+  "mode": "sandbox",
+  "status": "completed",
+  "baseUrl": "https://api-m.sandbox.paypal.com",
+  "createdAt": "2026-11-08T05:34:03.911Z",
+  "state": {
+    "orderId": "9W579655A7779603T",
+    "captureId": "6H6581514J8319405"
+  },
+  "results": [
+    {
+      "id": "RT-01",
+      "title": "Order creation is idempotent under PayPal-Request-Id",
+      "source": "paypal-sandbox",
+      "request": "POST /v2/checkout/orders ×2 (same Request-Id)",
+      "expected": "both calls return the same order id",
+      "actual": "9W579655A7779603T / 9W579655A7779603T",
+      "verdict": "secure",
+      "evidence": {
+        "statuses": [
+          201,
+          200
+        ]
+      }
+    },
+    {
+      "id": "RT-02",
+      "title": "Unapproved order cannot be captured (\"created ≠ paid\")",
+      "source": "paypal-sandbox",
+      "request": "POST /v2/checkout/orders/9W579655A7779603T/capture",
+      "expected": "HTTP 422 ORDER_NOT_APPROVED",
+      "actual": "HTTP 422 ORDER_NOT_APPROVED",
+      "verdict": "secure",
+      "evidence": {
+        "issue": "ORDER_NOT_APPROVED"
+      }
+    },
+    {
+      "id": "RT-03",
+      "title": "Capture replay returns the original capture (no double charge)",
+      "source": "paypal-sandbox",
+      "request": "POST …/capture ×2 (same Request-Id)",
+      "expected": "same capture id",
+      "actual": "6H6581514J8319405 / 6H6581514J8319405",
+      "verdict": "secure"
+    },
+    {
+      "id": "RT-04",
+      "title": "A fresh capture of an already-captured order is rejected",
+      "source": "paypal-sandbox",
+      "request": "POST …/capture (new Request-Id)",
+      "expected": "HTTP 422 ORDER_ALREADY_CAPTURED",
+      "actual": "HTTP 422 ORDER_ALREADY_CAPTURED",
+      "verdict": "secure"
+    },
+    {
+      "id": "RT-05",
+      "title": "Refund replay with the same Request-Id does not pay twice",
+      "source": "paypal-sandbox",
+      "request": "POST …/refund ×2 (same Request-Id, $100)",
+      "expected": "same refund id",
+      "actual": "5KP7598866884964C / 5KP7598866884964C",
+      "verdict": "secure",
+      "evidence": {
+        "statuses": [
+          201,
+          200
+        ]
+      }
+    },
+    {
+      "id": "RT-06",
+      "title": "A second $100 refund (new Request-Id) beyond the $126 capture is rejected",
+      "source": "paypal-sandbox",
+      "request": "POST …/refund ($100, new Request-Id)",
+      "expected": "HTTP 422 REFUND_AMOUNT_EXCEEDED (only $26 left)",
+      "actual": "HTTP 422 REFUND_AMOUNT_EXCEEDED",
+      "verdict": "secure"
+    },
+    {
+      "id": "RT-07",
+      "title": "Ledger reconciliation: NovaCart books vs PayPal payouts for the Siphon chain",
+      "source": "sellershield",
+      "request": "NovaCart simulator chain vs PayPal refund records",
+      "expected": "NovaCart refunds == PayPal refunds",
+      "actual": "NovaCart ledger refunds $200 vs PayPal refunded $100 → divergence $100",
+      "verdict": "weakness",
+      "evidence": {
+        "novacartRefunds": 200,
+        "paypalRefunded": 100,
+        "divergence": 100,
+        "correctedFrom": "earlier value \"NovaCart ledger refunds $200 vs PayPal refunded $0 → divergence $200\" was wrong: real PayPal omits the amount in the create-refund response; recomputed from GET /v2/payments/refunds/5KP7598866884964C",
+        "insight": "PayPal's capture cap stops the platform payout, but NovaCart's own refund logic would still approve and book the extra amount. The defence must live in NovaCart's refund code (refund-calc / refund-idempotency), not only at PayPal."
+      }
+    },
+    {
+      "id": "RT-08",
+      "title": "Forged webhook is rejected and not processed",
+      "source": "sellershield",
+      "request": "webhook with invalid signature",
+      "expected": "verification failed, rejected_unverified",
+      "actual": "failed / rejected_unverified",
+      "verdict": "secure"
+    },
+    {
+      "id": "RT-09",
+      "title": "Replayed webhook is detected as a duplicate",
+      "source": "sellershield",
+      "request": "same signed event delivered twice",
+      "expected": "second delivery flagged duplicate",
+      "actual": "{\"duplicate\":true,\"processingStatus\":\"ignored\",\"note\":\"Duplicate event ignored; not processed twice\"}",
+      "verdict": "secure"
+    }
+  ]
+}

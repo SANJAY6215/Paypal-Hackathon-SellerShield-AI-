@@ -28,7 +28,7 @@ With Sandbox credentials supplied in `backend/.env`:
 - Runs only against the simulated NovaCart shop.
 
 ## 3. Defence as Pull Request
-**Status: BLOCKED for a real PR** (`GITHUB_REPO` unset; token rotation unconfirmed); only MOCK TESTED. Added: richer PR content, read-only preflight `GET /api/github/status`, and post-creation verification against the GitHub API.
+**Status: LIVE VERIFIED once (2026-11-10)** in a dedicated test repo (https://github.com/SANJAY6215/sellershield-pr-test/pull/1; draft, 3 files, not merged, base untouched), after MOCK testing. Added: richer PR content, read-only preflight `GET /api/github/status`, and post-creation verification against the GitHub API.
 Requirements enforced by the API: defence status `verified` (regression tests passed) → human-approved → role admin/analyst → explicit `{"confirm": true}` → `GITHUB_TOKEN` + `GITHUB_REPO` configured. Files: `sellershield/fixes/<fix>.patch`, `sellershield/regression/<fix>.test.ts`, `sellershield/reports/<fix>.md`. The PR does not change application code by itself; merging is the repo owner's decision. Token scopes needed: contents write + pull requests write.
 
 ## Enable the real paths

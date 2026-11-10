@@ -109,7 +109,7 @@ The E2E suite leaves the demo database in a dirty state (some vulnerabilities re
 | Generated PR regression tests executed | **PASS** (4/4 for `coupon-stacking` and `payment-state`) |
 | Real PayPal Sandbox calls | **NOT TESTED** (red team validated against a local emulator that models documented behaviour; it is not PayPal) |
 | Live LLM calls | **Groq PASS live; Gemini BLOCKED (HTTP 403 billing)**: see `docs/LLM_LIVE_VALIDATION.md`; Anthropic removed |
-| Real GitHub PR creation | **NOT TESTED** (validated against a local mock server) |
+| Real GitHub PR creation | **Verified live later (2026-11-10)** in a dedicated test repo (see FINAL_HACKATHON_VALIDATION.md); this report's own run used a local mock server |
 
 Bugs found and fixed while building: (1) discovery trace writes could be overwritten by older snapshots (race) - now serialised; (2) the new test file mutated shared demo state and made other test files order-dependent - deterministic reset added; (3) raw search output was 60 near-duplicate findings with misleading titles - now ranked, capped and titled from the violated rules.
 A previously unnoticed gap was also closed: a new ledger invariant (*refund-without-settlement*) was added because the discovery search showed a refund of an unsettled payment (Cancel-for-Cash) that no existing invariant flagged; all existing tests still pass.

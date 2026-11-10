@@ -11,7 +11,7 @@ SellerShield AI is a merchant-side security testing platform for online sellers 
 - **PayPal Red Team:** an automated attacker that probes the PayPal Orders and Payments APIs in the **real PayPal Sandbox** (idempotency, capture before approval, capture replay, duplicate capture, refund replay, over-refund) and reconciles the shop's own ledger against PayPal's refund records. In our live run PayPal enforced every protection, but the reconciliation exposed a **$100 accounting divergence**: PayPal capped the payout at $100 while the shop's refund logic would have booked $200. The fix belongs in the merchant's refund code.
 - **Attack Discovery Lab:** an exhaustive search (about 155,000 action sequences, no AI) and an **LLM tool-use attacker (Groq)** invent attack sequences against a simulated shop. Nothing the model says is trusted: every sequence is replayed on the vulnerable shop and a fully secure baseline, checked against ledger invariants and replayed twice for determinism. The search found *Cancel-for-Cash*, a path outside the scripted scenarios.
 - **Six specialised agents + independent Auditor, compound attack chains** (e.g. "Discount-Stack Refund Siphon": $126 collected, $200 refunded, $154 excess per attack, versus $84 if exploited separately), **financial exposure model** (clearly labelled simulated projections), **patch generation as real code diffs** with human approval, explicit confirmation, rollback, regression tests and **regression memory** that flags a fixed vulnerability that returns.
-- **Defence as Pull Request:** a verified, approved fix is packaged as a patch, a runnable regression test and an evidence report for a **draft** GitHub PR (never merged automatically). *Status: implemented and tested against a mock; a real PR has not been created yet.*
+- **Defence as Pull Request:** a verified, approved fix is packaged as a patch, a runnable regression test and an evidence report for a **draft** GitHub PR (never merged automatically). *Status: implemented, mock-tested, and verified live once: a real draft PR was opened in a dedicated public test repo (https://github.com/SANJAY6215/sellershield-pr-test/pull/1) and checked via the GitHub API (draft, not merged, base branch untouched, 3 files).*
 
 ## How PayPal is used
 PayPal REST APIs in the Sandbox: OAuth 2.0 client credentials, Orders v2 (create, approve by a human buyer, capture), Payments v2 (refund, refund lookup), `PayPal-Request-Id` idempotency, and webhook signature verification via `verify-webhook-signature` (**verified live on 3 real Sandbox deliveries; a real Resend was delivered and not stored twice**).
@@ -32,7 +32,7 @@ MIT (see `LICENSE`, Copyright (c) 2026 Sanjay B.)
 Setup and run instructions: `README.md` and `docs/INSTALLATION_GUIDE.md`. No credentials are needed for the main demo (it runs on a local simulator); optional PayPal Sandbox and Groq keys unlock the live paths. [Optional hosted demo URL: none yet.]
 
 ## Honest limitations
-Simulation covers the built-in NovaCart shop only; real GitHub PR creation is not yet verified live; Gemini is disabled; dollar figures are simulated projections.
+Simulation covers the built-in NovaCart shop only; GitHub PR creation was verified live once, in a dedicated test repo; Gemini is disabled; dollar figures are simulated projections.
 
 ## Links
 Repository: [public GitHub URL] · Video: [YouTube URL] · Team: [names]

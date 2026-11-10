@@ -10,7 +10,7 @@ Everything on screen must be a genuine recording of the running app. Never show 
 | Guided search | **LOCAL simulator, no AI** |
 | LLM discovery | **LIVE: Groq LLM, replay-verified** |
 | Defence patch | **LOCAL: simulated shop, human-approved** |
-| Pull request | **PREVIEW ONLY: real GitHub PR not yet created** (or **LIVE: GitHub draft PR** only if one exists) |
+| Pull request | **LIVE: a real draft PR exists** (https://github.com/SANJAY6215/sellershield-pr-test/pull/1): show its GitHub page (Draft, 3 files, base main untouched); never merged |
 | Webhooks | **LIVE VERIFIED** on 3 real Sandbox events (a real Resend was delivered and not stored twice; response body not captured) |
 
 ## Shot list with timestamps
@@ -21,8 +21,8 @@ Everything on screen must be a genuine recording of the running app. Never show 
 | 0:55-1:25 | **Discovery Lab → Guided search → Run discovery** (about 5 s). Zoom on *Cancel-for-Cash*: 3 actions, $160. | "No AI here: an exhaustive search of 155,000 action sequences found that marking a payment pending, then cancelling, refunds money that never arrived. It's outside our scripted scenarios, and it's blocked by the payment-state fix." |
 | 1:25-1:50 | Same page, the **pre-run Groq LLM session** (run it *before* recording and do not reset afterwards: it takes about 2 minutes on the free tier). Show the trace with tool calls and the verified findings; open *Show independent verification*. | "A real LLM drives the shop through tool calls and improvises attacks. Its claims are never trusted: every sequence is replayed on the vulnerable shop and a secure baseline. Both findings here are known root causes via new paths, and hallucinated attacks are rejected." |
 | 1:50-2:25 | **Live Demo** or **Defence Center**: show the unified diff, tick the confirmation, apply, then **Replay the original attack → FAILED (blocked)** and the legitimate-refund checks passing. | "Fixes arrive as real code diffs, need human approval and an explicit confirmation, apply only to the demo app, and are proven by replaying the attack." |
-| 2:25-2:40 | Defence Center → **Preview pull request** (patch, regression test, report). | "Verified fixes can be opened as a draft GitHub pull request, never merged automatically. **[Say honestly: this is a preview; real GitHub creation is not yet verified.]**" (If a real draft PR exists, show its GitHub page and say so instead.) |
-| 2:40-2:55 | Attack Memory → Rerun previous tests → *reintroduced* (optional) **or** the Dashboard | "Live-verified: PayPal Sandbox and Groq. Also live: real PayPal webhook signature verification. Not yet live: the GitHub PR. Security should not stop at detection." |
+| 2:25-2:40 | Defence Center → **Preview pull request** (patch, regression test, report). | "Verified fixes can be opened as a draft GitHub pull request, never merged automatically. **[Then show the real draft PR #1 on GitHub: Draft, 3 files, base main untouched.]**" |
+| 2:40-2:55 | Attack Memory → Rerun previous tests → *reintroduced* (optional) **or** the Dashboard | "Live-verified: PayPal Sandbox and Groq. Also live: real PayPal webhook signature verification. Also live: a real draft GitHub PR in a dedicated test repo. Security should not stop at detection." |
 
 Total about 2:55. Cut the Attack Memory shot first if you run long; the hard limit is 3:00, so aim for 2:45.
 
@@ -53,4 +53,4 @@ Total about 2:55. Cut the Attack Memory shot first if you run long; the hard lim
 `docs/screenshots/final/LIVE-paypal-redteam-sandbox-phaseB-complete.png` (LIVE), `LIVE-discovery-groq-llm-session-fullpage.png` (LIVE, recorded earlier), `LOCAL-discovery-guided-search-cancel-for-cash.png` (LOCAL), `LOCAL-defence-center-proposed-patch.png` (LOCAL), `docs/redteam-live-sandbox-run.json` (data). **No still exists for a real GitHub PR or a real webhook; do not create or imply one.**
 
 ## Incomplete integrations to disclose
-GitHub draft PR (preview only until a real one is created) · PayPal webhook signature verification (not live) · Gemini (disabled; billing) · attack simulation covers the built-in NovaCart shop only.
+GitHub draft PR (one real PR in a dedicated test repo; never merged) · PayPal webhook signature verification (3 real Sandbox events; a real Resend delivered, response body not captured) · Gemini (disabled; billing) · attack simulation covers the built-in NovaCart shop only.
